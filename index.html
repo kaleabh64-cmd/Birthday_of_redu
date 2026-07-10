@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Surprise...</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- AOS CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        themeBg: '#FFF8F2',
+                        themePrimary: '#FF5C8A',
+                        themeSecondary: '#FFD6E7',
+                        themeGold: '#D4AF37',
+                        themeNight: '#0a0f24',
+                    },
+                    fontFamily: {
+                        vibes: ['"Great Vibes"', 'cursive'],
+                        poppins: ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Styles */
+        body { background-color: #FFF8F2; color: #333; overflow-x: hidden; transition: background-color 1.5s ease, color 1.5s ease; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: #FFD6E7; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #FF5C8A; }
+
+        /* Glassmorphism */
+        .glass-card { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 8px 32px 0 rgba(255, 92, 138, 0.1); }
+        .glass-dark { background: rgba(10, 15, 36, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5); color: white; }
+
+        /* Night Mode Utilities */
+        .night-mode { background-color: #0a0f24 !important; color: white !important; }
+        .night-text { color: white !important; }
+        
+        /* Floating Particles */
+        .particle-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+        @keyframes float-up { 0% { transform: translateY(100vh) rotate(0deg) scale(0.8); opacity: 0; } 10% { opacity: 0.6; } 90% { opacity: 0.6; } 100% { transform: translateY(-20vh) rotate(360deg) scale(1.2); opacity: 0; } }
+        .float-anim { animation: float-up linear infinite; position: absolute; bottom: -100px; }
+        
+        @keyframes twinkle { 0%, 100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 10px #fff; } }
+        .star { position: absolute; background: white; border-radius: 50%; animation: twinkle infinite ease-in-out; }
+
+        /* Carousel Styles */
+        .carousel-track { display: flex; transition: transform 0.5s ease-in-out; height: 100%; width: 100%; }
+        .carousel-slide { min-width: 100%; height: 100%; object-fit: cover; }
+        
+        /* Interactive Elements */
+        .shake-mobile { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(4px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-6px, 0, 0); } 40%, 60% { transform: translate3d(6px, 0, 0); } }
+
+        /* Magical Envelopes */
+        .envelope-wrapper { position: relative; width: 100%; height: 180px; cursor: pointer; transition: transform 0.3s; margin: 0 auto; }
+        .envelope-wrapper:hover { transform: translateY(-5px); }
+        .env-back { position: absolute; inset: 0; background: #FFD6E7; border-radius: 10px; }
+        .env-flap { position: absolute; top: 0; left: 0; width: 100%; height: 90px; background: #FFB3D1; clip-path: polygon(0 0, 100% 0, 50% 100%); transform-origin: top; transition: transform 0.6s; z-index: 10; }
+        .env-front { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; background: #fff; clip-path: polygon(0 0, 50% 50%, 100% 0, 100% 100%, 0 100%); z-index: 5; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; }
+        .env-letter { position: absolute; top: 10px; left: 5%; width: 90%; height: 160px; background: #fdfaf8; transition: transform 0.6s, opacity 0.6s; z-index: 2; padding: 15px; opacity: 0; display: flex; align-items: center; justify-content: center; text-align: center; border: 1px solid #eee;}
+        .envelope-wrapper.open .env-flap { transform: rotateX(180deg); z-index: 1; }
+        .envelope-wrapper.open .env-letter { transform: translateY(-80px); opacity: 1; z-index: 8; }
+
+        /* Hidden Click-to-Reveal Cards */
+        .reveal-card { min-height: 280px; cursor: pointer; position: relative; overflow: hidden; }
+        .reveal-cover { transition: opacity 0.4s ease, transform 0.4s ease; position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .reveal-card.active .reveal-cover { opacity: 0; transform: translateY(-20px); pointer-events: none; }
+        .reveal-content { transition: opacity 0.4s ease, transform 0.4s ease; position: absolute; inset: 0; padding: 2rem; display: flex; flex-direction: column; justify-content: center; opacity: 0; transform: translateY(20px); pointer-events: none; }
+        .reveal-card.active .reveal-content { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+        /* Glowing Button */
+        .glow-btn { animation: glow 2s infinite alternate; }
+        @keyframes glow { from { box-shadow: 0 0 10px #FF5C8A, 0 0 20px #FF5C8A; } to { box-shadow: 0 0 20px #FF5C8A, 0 0 40px #FF5C8A; } }
+        .paper-texture { background-color: #fdfaf8; background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png'); box-shadow: 2px 3px 20px rgba(0,0,0,0.1); }
+        /* ===========================
+   Mobile & Tablet Optimization
+   =========================== */
+
+img{
+    max-width:100%;
+    height:auto;
+}
+
+section{
+    padding-left:16px;
+    padding-right:16px;
+}
+<footer class="glass-card max-w-5xl mx-auto my-10 rounded-2xl py-6 text-center">
+    <p class="text-gray-600">
+        Made with ❤️ by <strong>The Three Kals</strong><br>
+        &copy; 2026 All Rights Reserved.
+    </p>
+</footer>
+.glass-card{
+    width:100%;
+}
+
+@media (max-width:767px){
+
+    h1{
+        font-size:clamp(2.2rem,9vw,4rem);
+    }
+
+    h2{
+        font-size:clamp(2rem,8vw,3.5rem);
+    }
+
+    h3{
+        font-size:clamp(1.3rem,6vw,2rem);
+    }
+
+    p{
+        font-size:15px;
+    }
+
+    .paper-texture{
+        padding:24px;
+    }
+
+    .reveal-card{
+        min-height:240px;
+    }
+
+    .glass-card{
+        padding:18px;
+    }
+
+    .carousel-slide{
+        object-fit:contain;
+    }
+}
+
+@media (min-width:768px) and (max-width:1024px){
+
+    .glass-card{
+        padding:24px;
+    }
+
+    .carousel-slide{
+        object-fit:contain;
+    }
+}
+.reveal-content{
+    position:absolute;
+    inset:0;
+    padding:2rem;
+    display:flex;
+    flex-direction:column;
+
+    opacity:0;
+    transform:translateY(20px);
+    pointer-events:none;
+
+    transition:opacity .4s ease, transform .4s ease;
+
+    /* NEW */
+    overflow-y:auto;
+    overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:thin;
+}.reveal-content::-webkit-scrollbar{
+    width:6px;
+}
+
+.reveal-content::-webkit-scrollbar-thumb{
+    background:#FF5C8A;
+    border-radius:10px;
+}
+
+.reveal-content::-webkit-scrollbar-track{
+    background:transparent;
+}.reveal-content p{
+    flex:1;
+    overflow-y:auto;
+    padding-right:8px;
+    white-space:pre-line; /* keeps your line breaks */
+}.reveal-card{
+    min-height:420px;
+}
+
+@media (max-width:768px){
+    .reveal-card{
+        min-height:500px;
+    }
+}
+footer{
+    margin-top:30px;
+    opacity:0.8;
+}
+    </style>
+</head>
+<body class="font-poppins antialiased">
+
+    <!-- Global Floating Particles -->
+    <div id="global-particles" class="particle-layer"></div>
+    <div id="night-stars" class="particle-layer hidden"></div>
+
+    <!-- =========================================================================
+         PLAYLIST (HTML ONLY)
+         Add as many songs as you want here. Just copy the <audio> tag format.
+         ========================================================================= -->
+    <div id="playlist" class="hidden">
+       <audio class="playlist-track" src="R2.mp3" data-title="Our Friendship Theme" data-cover="Re11.jpg"></audio>
+<audio class="playlist-track" src="R3.mp3" data-title="Our Friendship Theme" data-cover="Re10.jpg"></audio>
+<audio class="playlist-track" src="R6.mp3" data-title="Our Friendship Theme" data-cover="Re12.jpg"></audio>
+<audio class="playlist-track" src="R5.mp3" data-title="Our Friendship Theme" data-cover="Re13.jpg"></audio>
+<audio class="playlist-track" src="R4.mp3" data-title="Our Friendship Theme" data-cover="Re6.jpg"></audio>
+<audio class="playlist-track" src="R1.mp3" data-title="Our Friendship Theme" data-cover="Re9.jpg"></audio>
+  <audio class="playlist-track" src="R7.mp3" data-title="Our Friendship Theme" data-cover="Re5.jpg"></audio>
+    </div>
+
+    <!-- MAIN BACKGROUND MUSIC -->
+    <audio id="bg-music" loop class="hidden">
+        <!-- REPLACE BACKGROUND MUSIC HERE -->
+        <source src="R7.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- ==========================================
+         1. LOADING SCREEN
+         ========================================== -->
+    <div id="loader" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-themeBg transition-opacity duration-1000">
+        <i class="fa-solid fa-gift text-themePrimary text-6xl mb-6 animate-pulse"></i>
+        <h2 class="font-vibes text-4xl md:text-5xl text-themePrimary tracking-wide">Preparing your surprise...</h2>
+        <div class="mt-6 w-64 h-1 bg-themeSecondary rounded-full overflow-hidden relative">
+            <div id="loader-bar" class="absolute top-0 left-0 h-full bg-themePrimary w-0 transition-all duration-[2000ms] ease-out"></div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         2. LANDING PAGE
+         ========================================== -->
+    <section id="landing" class="relative min-h-screen flex flex-col items-center justify-center hidden z-10 px-4 transition-opacity duration-1000 opacity-0 overflow-hidden">
+        <div class="absolute top-0 left-0 p-6 text-themePrimary opacity-30 text-6xl -rotate-45"><i class="fa-brands fa-pagelines"></i></div>
+        <div class="absolute top-0 right-0 p-6 text-themePrimary opacity-30 text-6xl rotate-45"><i class="fa-brands fa-pagelines"></i></div>
+        <div class="absolute bottom-0 left-0 p-6 text-themePrimary opacity-30 text-6xl -rotate-135"><i class="fa-brands fa-pagelines"></i></div>
+        <div class="absolute bottom-0 right-0 p-6 text-themePrimary opacity-30 text-6xl rotate-135"><i class="fa-brands fa-pagelines"></i></div>
+
+        <div class="mb-6 bg-white w-24 h-24 rounded-full flex items-center justify-center shadow-glass animate-bounce relative z-10">
+            <i class="fa-solid fa-cat text-4xl text-themePrimary"></i>
+        </div>
+
+        <h1 class="font-vibes text-6xl md:text-8xl text-themePrimary mb-4 text-center drop-shadow-sm relative z-10">Hello, <span class="bday-name">Redu</span> ❤️</h1>
+        <p class="text-xl md:text-2xl text-gray-600 mb-2 text-center font-light relative z-10">We made something special just for you.</p>
+        <p class="text-lg md:text-xl text-gray-500 mb-12 text-center relative z-10">Ready to open your birthday surprise?</p>
+
+        <div class="flex flex-col md:flex-row items-center gap-6 relative w-full justify-center h-40 z-20">
+            <button id="btn-open" class="glass-card px-10 py-4 rounded-full text-themePrimary font-bold tracking-wider hover:bg-themePrimary hover:text-white transition-all duration-300 shadow-xl transform hover:scale-105">
+                <i class="fa-solid fa-gift mr-2"></i> OPEN MY GIFT
+            </button></br></br></br></br>
+            <button id="btn-later" class="px-8 py-4 rounded-full text-gray-400 bg-white/40 border border-gray-200 font-medium transition-colors absolute md:relative">
+                MAYBE LATER
+            </button>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         MAIN CONTENT WRAPPER
+         ========================================== -->
+    <main id="main-content" class="hidden relative z-10">
+
+        <!-- ==========================================
+             3. HAPPY BIRTHDAY HERO
+             ========================================== -->
+        <section id="hero" class="min-h-screen flex flex-col items-center justify-center text-center px-4 relative pt-10">
+            <div class="glass-card p-12 md:p-24 rounded-3xl relative w-full max-w-4xl mx-auto" data-aos="zoom-in" data-aos-duration="1500">
+                <h2 class="font-vibes text-7xl md:text-[120px] text-themePrimary drop-shadow-sm mb-2 leading-none">Happy Birthday</h2>
+                <h3 class="text-5xl md:text-7xl font-bold text-gray-800 mb-4 bday-name">Princess</h3>
+                <p class="text-2xl md:text-3xl text-themeGold font-medium mb-12 tracking-[0.4em] uppercase">July 10</p>
+                <button onclick="document.getElementById('countdown').scrollIntoView({behavior:'smooth'})" class="text-themePrimary text-3xl hover:text-themeGold transition-colors animate-bounce">
+                    <i class="fa-solid fa-angle-down"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             4. COUNTDOWN
+             ========================================== -->
+        <section id="countdown" class="py-32 flex flex-col items-center justify-center text-center px-4 min-h-[50vh]">
+            <div id="cd-display" class="text-[150px] md:text-[250px] font-bold text-themePrimary font-vibes h-64 flex items-center justify-center"></div>
+            <h3 id="cd-text" class="text-3xl md:text-5xl font-vibes text-gray-600 mt-6 opacity-0 transition-opacity duration-1000 max-w-3xl leading-relaxed">
+                Let's walk through the beautiful memories we've shared together.
+            </h3>
+        </section>
+
+        <!-- =========================================================================
+             PHOTO ALBUMS (CAROUSELS)
+             ========================================================================= -->
+
+        <!-- ALBUM 1: X AND BD GIRL -->
+        <section class="py-20 px-4 max-w-5xl mx-auto" data-aos="fade-up">
+            <div class="text-center mb-8">
+                <h2 class="font-vibes text-6xl text-themePrimary mb-2">The picture of our Princess👸</h2>
+                <p class="text-gray-500 font-light">our princess👑 : </br>❤️ The heart of our friendship  </p>
+            </div>
+            
+            <div class="relative w-full h-[680px] md:h-[400px] rounded-3xl overflow-hidden glass-card p-2 shadow-2xl">
+                <div class="carousel-track" id="track-album-1" data-index="0">
+                    <!-- COPY & PASTE THIS LINE TO ADD MORE PHOTOS (10+ if you want!) -->
+                    <!-- Re1 - Re11 -->
+<!-- Re1 - Re11 -->
+<img src="Re1.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Re2.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Re3.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Re4.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Re5.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Re6.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Re7.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Re8.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Re9.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Re10.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Re11.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+                </div>
+                <button onclick="moveCarousel('track-album-1', -1)" class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/70 backdrop-blur text-themePrimary shadow-lg hover:bg-white transition flex items-center justify-center"><i class="fa-solid fa-chevron-left"></i></button>
+                <button onclick="moveCarousel('track-album-1', 1)" class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/70 backdrop-blur text-themePrimary shadow-lg hover:bg-white transition flex items-center justify-center"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+        <!-- ALBUM 2: Y AND BD GIRL -->
+        <section class="py-20 px-4 max-w-5xl mx-auto" data-aos="fade-up">
+            <div class="text-center mb-8">
+                <h2 class="font-vibes text-6xl text-themeGold mb-2">The picture of sisters bonded with love</h2>
+                <p class="text-gray-500 font-light">Our unforgettable moments</p>
+            </div>
+            
+            <div class="relative w-full h-[680px] md:h-[400px] rounded-3xl overflow-hidden glass-card p-2 shadow-2xl">
+                <div class="carousel-track" id="track-album-2" data-index="0">
+                    <!-- Rr1 - Rr14 -->
+<img src="Rr1.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Rr2.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Rr3.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Rr4.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Rr5.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Rr6.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Rr7.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Rr8.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Rr9.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Rr10.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Rr11.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Rr12.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Rr13.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Rr14.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+                </div>
+                <button onclick="moveCarousel('track-album-2', -1)" class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/70 backdrop-blur text-themeGold shadow-lg hover:bg-white transition flex items-center justify-center"><i class="fa-solid fa-chevron-left"></i></button>
+                <button onclick="moveCarousel('track-album-2', 1)" class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/70 backdrop-blur text-themeGold shadow-lg hover:bg-white transition flex items-center justify-center"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+        <!-- ALBUM 3: THE TRIO -->
+        <section class="py-20 px-4 max-w-5xl mx-auto" data-aos="fade-up">
+            <div class="text-center mb-8">
+                <h2 class="font-vibes text-6xl text-themePrimary mb-2">The trio❤️</h2>
+                <p class="text-gray-500 font-light">Three hearts, one story</p>
+            </div>
+            
+            <div class="relative w-full h-[680px] md:h-[400px] rounded-3xl overflow-hidden glass-card p-2 shadow-2xl">
+                <div class="carousel-track" id="track-album-3" data-index="0">
+                  <!-- Tkd1 - Tkd6 -->
+<img src="Tkd1.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Tkd2.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Tkd3.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Tkd4.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Tkd5.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+<img src="Tkd6.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Memory">
+                </div>
+                <button onclick="moveCarousel('track-album-3', -1)" class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/70 backdrop-blur text-themePrimary shadow-lg hover:bg-white transition flex items-center justify-center"><i class="fa-solid fa-chevron-left"></i></button>
+                <button onclick="moveCarousel('track-album-3', 1)" class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/70 backdrop-blur text-themePrimary shadow-lg hover:bg-white transition flex items-center justify-center"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             NIGHT MODE ANCHOR & LATE NIGHT TALKS
+             ========================================== -->
+        <div id="night-trigger"></div> <!-- JS watches this to change background to night -->
+
+        <section class="py-32 px-4 relative z-10 text-center">
+            <div data-aos="zoom-in" class="max-w-4xl mx-auto">
+                <i class="fa-solid fa-moon text-6xl text-blue-200 mb-8 animate-pulse drop-shadow-[0_0_15px_rgba(255,255,255,0.8)]"></i>
+                <h2 class="font-vibes text-5xl md:text-7xl mb-6 header-text text-themePrimary transition-colors duration-1000">The Conversations That Lasted Until Midnight 🌙</h2>
+                <p class="text-xl md:text-2xl font-light italic text-gray-500 sub-text transition-colors duration-1000">"Some memories aren't photos. They're conversations we'll never forget."</p>
+            </div>
+        </section>
+
+        <!-- ALBUM 4: LATE NIGHT TALKS WITH X -->
+        <section class="py-10 px-4 max-w-5xl mx-auto" data-aos="fade-up">
+            <div class="text-center mb-8">
+                <h3 class="text-3xl font-bold header-text text-themePrimary transition-colors duration-1000">we continue to talk even if we said good night❤️ kal.T</h3>
+            </div>
+            
+            <div class="relative w-full h-[680px] md:h-[400px] rounded-3xl overflow-hidden glass-card glass-container p-2 shadow-2xl transition-all duration-1000">
+                <div class="carousel-track" id="track-album-4" data-index="0">
+                    <img src="Tk1.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk2.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk3.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk4.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk5.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk6.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk7.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk8.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk9.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk10.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk11.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk12.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk13.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk14.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk15.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk16.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk17.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk18.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk19.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk20.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk33.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk34.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk35.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk36.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk37.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk38.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk39.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk40.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tk41.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+                </div>
+                <button onclick="moveCarousel('track-album-4', -1)" class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/70 backdrop-blur text-gray-800 shadow-lg hover:bg-white transition flex items-center justify-center"><i class="fa-solid fa-chevron-left"></i></button>
+                <button onclick="moveCarousel('track-album-4', 1)" class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/70 backdrop-blur text-gray-800 shadow-lg hover:bg-white transition flex items-center justify-center"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+        <!-- ALBUM 5: LATE NIGHT TALKS WITH Y -->
+        <section class="py-10 px-4 max-w-5xl mx-auto mb-32" data-aos="fade-up">
+            <div class="text-center mb-8">
+                <h3 class="text-3xl font-bold header-text text-themePrimary transition-colors duration-1000">my favorite nights with my Queen 👸 kal.G</h3>
+            </div>
+            
+            <div class="relative w-full h-[680px] md:h-[400px] rounded-3xl overflow-hidden glass-card glass-container p-2 shadow-2xl transition-all duration-1000">
+                <div class="carousel-track" id="track-album-5" data-index="0">
+<img src="Tg1.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tg2.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tg3.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tg4.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tg5.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tg6.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tg7.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tg8.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+<img src="Tg9.jpg" class="carousel-slide rounded-2xl opacity-90" alt="Chat">
+                </div>
+                <button onclick="moveCarousel('track-album-5', -1)" class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/70 backdrop-blur text-gray-800 shadow-lg hover:bg-white transition flex items-center justify-center"><i class="fa-solid fa-chevron-left"></i></button>
+                <button onclick="moveCarousel('track-album-5', 1)" class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/70 backdrop-blur text-gray-800 shadow-lg hover:bg-white transition flex items-center justify-center"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             6. UNIFIED MUSIC PLAYER
+             ========================================== -->
+        <section class="py-20 px-4 max-w-3xl mx-auto" data-aos="zoom-in">
+            <h2 class="font-vibes text-6xl text-center mb-12 header-text text-themePrimary transition-colors duration-1000">The Soundtrack of Us</h2>
+            
+            <div class="glass-card glass-container p-8 rounded-[40px] shadow-2xl transition-all duration-1000 flex flex-col items-center">
+                <!-- Cover Art -->
+                <img id="player-cover" src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=400" class="w-48 h-48 md:w-64 md:h-64 rounded-full object-cover shadow-2xl border-4 border-white mb-6 animate-[spin_10s_linear_infinite]" style="animation-play-state: paused;" alt="Cover">
+                
+                <!-- Info -->
+                <h3 id="player-title" class="text-2xl font-bold header-text text-gray-800 transition-colors duration-1000 mb-1">Our Friendship Theme</h3>
+                <p class="text-sm sub-text text-gray-500 transition-colors duration-1000 mb-8">Playing now...</p>
+                
+                <!-- Controls -->
+                <div class="flex items-center gap-8">
+                    <button onclick="prevSong()" class="text-3xl header-text text-gray-800 hover:scale-110 transition"><i class="fa-solid fa-backward-step"></i></button>
+                    
+                    <button onclick="togglePlay()" id="btn-play-pause" class="w-20 h-20 rounded-full bg-themePrimary text-white flex items-center justify-center text-3xl shadow-lg hover:scale-110 transition">
+                        <i class="fa-solid fa-play ml-1"></i>
+                    </button>
+                    
+                    <button onclick="nextSong()" class="text-3xl header-text text-gray-800 hover:scale-110 transition"><i class="fa-solid fa-forward-step"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             7. THINGS WE LOVE (Glass Pills)
+             ========================================== -->
+        <section class="py-24 px-4 max-w-6xl mx-auto">
+            <h2 class="font-vibes text-6xl md:text-7xl text-center header-text text-themePrimary transition-colors duration-1000 mb-16" data-aos="fade-up">Things We Love About You</h2>
+            <div class="flex flex-wrap justify-center gap-4">
+                <!-- Add or Edit traits directly here -->
+                <div class="glass-card glass-container px-6 py-3 rounded-full hover:-translate-y-2 transition duration-300 shadow-sm" data-aos="zoom-in"><span class="font-medium header-text text-gray-700 text-lg transition-colors duration-1000">❤️ Kind</span></div>
+                <div class="glass-card glass-container px-6 py-3 rounded-full hover:-translate-y-2 transition duration-300 shadow-sm" data-aos="zoom-in" data-aos-delay="50"><span class="font-medium header-text text-gray-700 text-lg transition-colors duration-1000">🌸 Beautiful Soul</span></div>
+                <div class="glass-card glass-container px-6 py-3 rounded-full hover:-translate-y-2 transition duration-300 shadow-sm" data-aos="zoom-in" data-aos-delay="100"><span class="font-medium header-text text-gray-700 text-lg transition-colors duration-1000">😂 Funny</span></div>
+                <div class="glass-card glass-container px-6 py-3 rounded-full hover:-translate-y-2 transition duration-300 shadow-sm" data-aos="zoom-in" data-aos-delay="150"><span class="font-medium header-text text-gray-700 text-lg transition-colors duration-1000">✨ Inspiring</span></div>
+                <div class="glass-card glass-container px-6 py-3 rounded-full hover:-translate-y-2 transition duration-300 shadow-sm" data-aos="zoom-in" data-aos-delay="200"><span class="font-medium header-text text-gray-700 text-lg transition-colors duration-1000">💪 Strong</span></div>
+                <div class="glass-card glass-container px-6 py-3 rounded-full hover:-translate-y-2 transition duration-300 shadow-sm" data-aos="zoom-in" data-aos-delay="250"><span class="font-medium header-text text-gray-700 text-lg transition-colors duration-1000">📚 Smart</span></div>
+                <div class="glass-card glass-container px-6 py-3 rounded-full hover:-translate-y-2 transition duration-300 shadow-sm" data-aos="zoom-in" data-aos-delay="300"><span class="font-medium header-text text-gray-700 text-lg transition-colors duration-1000">🤍 Loyal</span></div>
+                <div class="glass-card glass-container px-6 py-3 rounded-full hover:-translate-y-2 transition duration-300 shadow-sm" data-aos="zoom-in" data-aos-delay="350"><span class="font-medium header-text text-gray-700 text-lg transition-colors duration-1000">🌟 Talented</span></div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             8. FUNNY ENVELOPES
+             ========================================== -->
+        <section class="py-24 px-4 bg-white/10 backdrop-blur-sm border-y border-white/20">
+            <h2 class="font-vibes text-6xl md:text-7xl text-center header-text text-themePrimary transition-colors duration-1000 mb-20" data-aos="fade-up">A Little Laugh</h2>
+            <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16">
+                <!-- Env 1 -->
+                <div data-aos="zoom-in" class="text-center">
+                    <div class="envelope-wrapper" onclick="this.classList.toggle('open')">
+                        <div class="env-back"></div>
+                        <div class="env-letter"><p class="text-gray-800 font-medium">Tinesh chaw tal adregubet ene endeza eyadereku new 3 wer yekoyehut eshet eshet new milew😁😅</p></div>
+                        <div class="env-front flex justify-center"><div class="w-12 h-12 bg-themePrimary rounded-full text-white flex items-center justify-center absolute -top-6 text-2xl">😂</div></div>
+                        <div class="env-flap"></div>
+                    </div>
+                </div>
+                <!-- Env 2 -->
+                <div data-aos="zoom-in" data-aos-delay="100" class="text-center">
+                    <div class="envelope-wrapper" onclick="this.classList.toggle('open')">
+                        <div class="env-back"></div>
+                        <div class="env-letter"><p class="text-gray-800 font-medium">akem atechalew.enante akem atachu atawkum ende</p></div>
+                        <div class="env-front flex justify-center"><div class="w-12 h-12 bg-themeGold rounded-full text-white flex items-center justify-center absolute -top-6 text-2xl">🙈</div></div>
+                        <div class="env-flap"></div>
+                    </div>
+                </div>
+                <!-- Env 3 -->
+                <div data-aos="zoom-in" data-aos-delay="200" class="text-center">
+                    <div class="envelope-wrapper" onclick="this.classList.toggle('open')">
+                        <div class="env-back"></div>
+                        <div class="env-letter"><p class="text-gray-800 font-medium">remember, bezawit maryam kefite endet tkll endalsh, telatsh endeza tkll ybel ehte🤣</p></div>
+                        <div class="env-front flex justify-center"><div class="w-12 h-12 bg-blue-400 rounded-full text-white flex items-center justify-center absolute -top-6 text-2xl">🤭🫣</div></div>
+                        <div class="env-flap"></div>
+                    </div>
+                </div>
+                 <div data-aos="zoom-in" data-aos-delay="100" class="text-center">
+                    <div class="envelope-wrapper" onclick="this.classList.toggle('open')">
+                        <div class="env-back"></div>
+                        <div class="env-letter"><p class="text-gray-800 font-medium">karton yelegnm🤷😁</p></div>
+                        <div class="env-front flex justify-center"><div class="w-12 h-12 bg-themeGold rounded-full text-white flex items-center justify-center absolute -top-6 text-2xl">🤷</div></div>
+                        <div class="env-flap"></div>
+                         <div data-aos="zoom-in" data-aos-delay="100" class="text-center">
+                    <div class="envelope-wrapper" onclick="this.classList.toggle('open')">
+                        <div class="env-back"></div>
+                        <div class="env-letter"><p class="text-gray-800 font-medium">ye suku balebet ene aydelehum🤦</p></div>
+                        <div class="env-front flex justify-center"><div class="w-12 h-12 bg-themeGold rounded-full text-white flex items-center justify-center absolute -top-6 text-2xl">🤦</div></div>
+                        <div class="env-flap"></div>
+                         <div data-aos="zoom-in" data-aos-delay="100" class="text-center">
+                    <div class="envelope-wrapper" onclick="this.classList.toggle('open')">
+                        <div class="env-back"></div>
+                        <div class="env-letter"><p class="text-gray-800 font-medium">ema🤣</p></div>
+                        <div class="env-front flex justify-center"><div class="w-12 h-12 bg-themeGold rounded-full text-white flex items-center justify-center absolute -top-6 text-2xl">😁</div></div>
+                        <div class="env-flap"></div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             10. MESSAGES FROM ME, X, AND Y
+             (Hidden by default, Click to Reveal!)
+             ========================================== -->
+        <section class="py-24 px-4 max-w-6xl mx-auto relative">
+            <h2 class="font-vibes text-6xl md:text-7xl text-center header-text text-themePrimary transition-colors duration-1000 mb-16" data-aos="fade-up">Messages From Our Hearts 💌</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- Reveal Card 1 -->
+                <div class="reveal-card glass-card glass-container rounded-3xl shadow-xl transition-colors duration-1000" data-aos="fade-up" onclick="this.classList.add('active')">
+                    <!-- Cover (Hidden on click) -->
+                    <div class="reveal-cover">
+                        <i class="fa-solid fa-heart text-4xl text-themePrimary mb-4"></i>
+                        <h3 class="text-2xl font-bold header-text text-gray-800 transition-colors">From Kal.T</h3>
+                        <p class="text-sm sub-text text-gray-500 mt-2 transition-colors border border-gray-400/30 px-4 py-1 rounded-full mt-4">Tap to read</p>
+                    </div>
+                    <!-- Hidden Message -->
+                    <div class="reveal-content text-center">
+                        <h3 class="text-xl font-bold header-text text-gray-800 mb-4 border-b border-gray-200/20 pb-2 transition-colors">From Kal.T</h3>
+                        <p class="sub-text text-gray-600 font-light italic leading-relaxed transition-colors">
+                            <!-- REPLACE MESSAGE HERE -->
+Date: Apr 30, 2026
+Subject: Ehet aleme✨
+22-08-2018
+Yene enku yene abeba🌸 yene hulu neger ehet bilu ehet guadegna bilu guadegna eko nesh✨maryamn anchi le ene egziabher kelay yesetegn setotaye nesh enate maryamn endi yehonal beye asebe balawkem gn beka hone egziabher yewededewn aderege🙏🥰beka andachn le andachn bertat endnhon adregonal kidanemhret kekifu hulu tetebekelegn erejim edme ke tena gar seton kezi belay des yemilu gizeyatn abren endnasalef esu yerdan be betu atsnton kemnasbachew belay web yehonu gizeatn abren endnasalef yerdan ehete✨🙏🙏
+Ewnetun lemenager yehen yetsafkut zem beye sele anchi be hiwote tilek bota selalat ehete tinesh beles beye new yehone ken mayetesh aykerem gn beka u are a girl❤️‍🩹 yehone birtat yalat tinekarewa lesew yemigaba ewnet becha ehte betam ewedshalew nurilegn❤️‍🩹lv u yene🌏❤️‍🩹
+
+
+And also today is ur birthday😊❤️‍🩹enkuan teweledshilegn yene enku emebrehan yelibshn meshat tefetsmelesh kelijinetesh jemero yasadegesh kekifu hulu yetebekesh kidus mikael chinkeshn yakelelesh yene ehet❤️‍🩹kasebshiw belay yasebelesh tilek new ena esun yasakalesh🌸❤️‍🩹+1🎂🍾welcome belenal😊18🍾💫tedersoal bota atatabi lekek eyaderegsh sistu😊
+Anyways HAPPPY BIRTHDAY MY STEELA💋💫❤️‍🩹
+
+Ewedshalew ehete✨❤️‍🩹🌏🌸
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Reveal Card 2 -->
+                <div class="reveal-card glass-card glass-container rounded-3xl shadow-xl transition-colors duration-1000" data-aos="fade-up" data-aos-delay="100" onclick="this.classList.add('active')">
+                    <!-- Cover (Hidden on click) -->
+                    <div class="reveal-cover">
+                        <i class="fa-solid fa-star text-4xl text-themeGold mb-4"></i>
+                        <h3 class="text-2xl font-bold header-text text-gray-800 transition-colors">From Kal.G</h3>
+                        <p class="text-sm sub-text text-gray-500 mt-2 transition-colors border border-gray-400/30 px-4 py-1 rounded-full mt-4">Tap to read</p>
+                    </div>
+                    <!-- Hidden Message -->
+                    <div class="reveal-content text-center">
+                        <h3 class="text-xl font-bold header-text text-gray-800 mb-4 border-b border-gray-200/20 pb-2 transition-colors">From Kal.G</h3>
+                        <p class="sub-text text-gray-600 font-light italic leading-relaxed transition-colors">
+                            <!-- REPLACE MESSAGE HERE -->
+Happy Birthday, my dearest Redi! 🤍🎉❤️🥰😍
+
+
+I can't believe we've been friends for five years already. It feels like yesterday we were two girls in Grade 7 who didn't even know each other, sitting together in class. Who knew that one seat would bring such an amazing person into my life? Degmo betam mn endemigermegn tawukiyalesh and ken enkuan tetalten anawukm 🫣😁🥰
+
+From Grade 7 until now, we've spent so much of our time together—going to the library, studying, different gedamat and sharing conversations that I'll never forget. Some of my favorite memories are our mornings at Hanan Mariam Church. Whenever I was stressed or overwhelmed, you would call me and simply say, "Come to Hanan Mariam." I would come, and somehow, after talking with you, I always left feeling lighter. Idk why gn beka hulem eko new Your advice, your encouragement, your prayers, and even the stories you shared helped me more than you probably realize.
+
+Grade 9 was a turning point in your life, and I learned so many things from watching you. Betam bzu maryamn kemtasbiw belay I know be Tiru menged bayihonm gn beka betam bezu neger temrenbetal. you never left my side. You prayed for me, listened to me, appreciated me, and reminded me to keep going.AMESEGNALEHU YENE EHT for being the kind of friend who stays, even when life gets difficult.
+
+One of the things I love most about you is the way you treat people. You always know how to make someone feel valued. Sometimes I feel like you're our mother because you're always giving advice, caring for everyone, tekochi ,astarakimand reminding us to do the right thing. Kezih befitm byesh awukalehu aa ንፁህ ልብ new yalesh maryAmn yene worq eht Your trust in the Orthodox faith inspires me, and I've learned so much from u.
+Kidanemhret ye libshin meshat tfetsmlsh🙏❤️🥰
+Like melaku ke kifu negeroch hulu yitebksh😍🙏
+Hulem yemtlemgniw kidus Georgis tselotshin semto zm ayibelsh❤️🥰🙏
+Ye enatachin enat kidist Hana maryam be kibr ena be  moges ttebksh ehtalem
+I know ye lij mrkat ayidersm gn amen malet endatreshi 😁🙏
+Bcha tanashua betam ewodshalehu bedgami enkuan tewoledshilgn ehtalem neffff amet nurilgn❤️🥰😍
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Reveal Card 3 -->
+                <div class="reveal-card glass-card glass-container rounded-3xl shadow-xl transition-colors duration-1000" data-aos="fade-up" data-aos-delay="200" onclick="this.classList.add('active')">
+                    <!-- Cover (Hidden on click) -->
+                    <div class="reveal-cover">
+                        <i class="fa-solid fa-cloud text-4xl text-blue-400 mb-4"></i>
+                        <h3 class="text-2xl font-bold header-text text-gray-800 transition-colors">From The Black Kal</h3>
+                        <p class="text-sm sub-text text-gray-500 mt-2 transition-colors border border-gray-400/30 px-4 py-1 rounded-full mt-4">Tap to read</p>
+                    </div>
+                    <!-- Hidden Message -->
+                    <div class="reveal-content text-center">
+                        <h3 class="text-xl font-bold header-text text-gray-800 mb-4 border-b border-gray-200/20 pb-2 transition-colors">From The Black Kal</h3>
+                        <p class="sub-text text-gray-600 font-light italic leading-relaxed transition-colors">
+                            <!-- REPLACE MESSAGE HERE -->
+                            Happy 18th Birthday, Mrs. Mercedes! ❤️🎉
+
+Today isn't just another birthday, it's the day you officially turn 18. Anchi adegsh eko😳. A whole new chapter begins, and I couldn't be happier for you. 🎉🎂
+
+I can't believe that I'm writing you a birthday letter right now because once upon a time anchin chemro hulachunm yenanten jema betam neber mtelaw like for no reason gn as they say don't judge a book by it's cover when I know u guys all of u on that crew are an amazing creatures I have to admit that, anyways who cares about the past , ahun lay slawekuachew des kemilugn sewoch mekakel anchi andua nesh and zare demo yezich mrt set ldet new 👸✨, this day 18 years ago the world met a short, nice and Mercedes obsessed girl 🚗💖 and we really have to celebrate this day it's your special day, the day u born and began yhein aselchim asdesachm yehone ye mdr nuro 🤦‍♂️
+
+wtf am I even talking about forgive me princess 👑 for wasting ur time I know I can't write this shit gn bihonm just let me wish u something 🤞, may this coming year be ur amazing year fetari yelbshn meshat ymulalsh kekfu neger ytebksh ehte demo tnsh kumet mtchemribet yarglsh, behiwetsh mrtun amet endtasalfi emegnlshalew gena demo behiwetsh mrtu gizew eyemeta endehone alteraterm egziabher yasebshwn hulu asaktolsh mtfelgibet derea lay endemtdershi amnbshakew because u can do it I know u will 💪🔥
+
+Lemangnawm anzazahubsh bedgami enkaun teweledsh mrs Mercedes 🚗✨, wish u the best birthday ever 🎈🎁
+
+With love and respect ❤️ from the one who call u mrs Mercedes
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- Animated Typewriter Text -->
+            <div class="mt-20 text-center h-16">
+                <span id="typed-messages" class="text-2xl md:text-3xl font-vibes text-themeSecondary drop-shadow-md"></span>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             10.5. THE ADVENTURES WAITING FOR US
+             (Future Memories Timeline)
+             ========================================== -->
+        <section class="py-24 px-4 max-w-4xl mx-auto">
+            <h2 class="font-vibes text-6xl md:text-7xl text-center header-text text-themePrimary transition-colors duration-1000 mb-20" data-aos="fade-up">things we wanna do with the princess</h2>
+            
+            <div class="relative border-l-2 border-themeSecondary pl-8 ml-6 md:ml-0">
+                <!-- Adventure 1 -->
+                <div class="mb-12 relative" data-aos="fade-left">
+                    <div class="absolute -left-[45px] top-1 w-6 h-6 bg-themePrimary rounded-full border-4 border-themeNight shadow"></div>
+                    <!-- REPLACE TEXT HERE -->
+                    <h3 class="text-2xl font-bold header-text text-gray-800 glass-container bg-white/50 backdrop-blur inline-block px-6 py-4 rounded-2xl shadow-sm border border-white/20 transition-colors duration-1000">yeteleyayu hageroch eyehedn visit madreg ke geter eske ketema including yenanten sefer eshi😉😁✈️</h3>
+                </div>   <div class="mb-12 relative" data-aos="fade-left">
+                    <div class="absolute -left-[45px] top-1 w-6 h-6 bg-themePrimary rounded-full border-4 border-themeNight shadow"></div>                    <h3 class="text-2xl font-bold header-text text-gray-800 glass-container bg-white/50 backdrop-blur inline-block px-6 py-4 rounded-2xl shadow-sm border border-white/20 transition-colors duration-1000">yelibuan yemireda yemiwedat esuam yemtwedew ke esua belay sele esua yemiyasblatn bal setageba ell beye medar😁
+</h3>
+                </div>
+
+
+                <!-- Adventure 2 -->
+                <div class="mb-12 relative" data-aos="fade-left" data-aos-delay="100">
+                    <div class="absolute -left-[45px] top-1 w-6 h-6 bg-themePrimary rounded-full border-4 border-themeNight shadow"></div>
+                    <!-- REPLACE TEXT HERE -->
+                    <h3 class="text-2xl font-bold header-text text-gray-800 glass-container bg-white/50 backdrop-blur inline-block px-6 py-4 rounded-2xl shadow-sm border border-white/20 transition-colors duration-1000">abren menor.beka ande bet wst abren menor keza abren eyekorebn,abren eyaskedesn,abren gedamat eyehedn beka wede betu mekreb✨♥️
+</h3>
+                </div>
+      <div class="mb-12 relative" data-aos="fade-left" data-aos-delay="200">
+                    <div class="absolute -left-[45px] top-1 w-6 h-6 bg-themePrimary rounded-full border-4 border-themeNight shadow"></div>
+                    <!-- REPLACE TEXT HERE -->
+                    <h3 class="text-2xl font-bold header-text text-gray-800 glass-container bg-white/50 backdrop-blur inline-block px-6 py-4 rounded-2xl shadow-sm border border-white/20 transition-colors duration-1000">mnm enkuan begna akem maychal neger bihonem egziabher biredan ena esu bifekd behiwotachew betam struggle eyaderegu alsaka yalachew tesfa lekoretut ena sus wst gebtew egziabher erestew tesfa lekoretut tesfa mehon birtat mehon wede betu bemakreb hulum endemilewet endiredu madreg...🙏</h3>
+                </div>
+                <!-- Adventure 3 -->
+                                <div class="mb-12 relative" data-aos="fade-left" data-aos-delay="200">
+                    <div class="absolute -left-[45px] top-1 w-6 h-6 bg-themePrimary rounded-full border-4 border-themeNight shadow"></div>
+                    <!-- REPLACE TEXT HERE -->
+                    <h3 class="text-2xl font-bold header-text text-gray-800 glass-container bg-white/50 backdrop-blur inline-block px-6 py-4 rounded-2xl shadow-sm border border-white/20 transition-colors duration-1000">abren cinima bet mehed🍿🎬</h3>
+                </div>
+                <div class="mb-12 relative" data-aos="fade-left" data-aos-delay="200">
+                    <div class="absolute -left-[45px] top-1 w-6 h-6 bg-themePrimary rounded-full border-4 border-themeNight shadow"></div>
+                    <!-- REPLACE TEXT HERE -->
+                    <h3 class="text-2xl font-bold header-text text-gray-800 glass-container bg-white/50 backdrop-blur inline-block px-6 py-4 rounded-2xl shadow-sm border border-white/20 transition-colors duration-1000">abren adar adren askedsen mekureb✨❤️✨</h3>
+                    <div class="mb-12 relative" data-aos="fade-left" data-aos-delay="200">
+                    <div class="absolute -left-[45px] top-1 w-6 h-6 bg-themePrimary rounded-full border-4 border-themeNight shadow"></div>
+                    <!-- REPLACE TEXT HERE -->
+                    <h3 class="text-2xl font-bold header-text text-gray-800 glass-container bg-white/50 backdrop-blur inline-block px-6 py-4 rounded-2xl shadow-sm border border-white/20 transition-colors duration-1000">be mercedes drift madreg, i know we will🚗🚗</h3>
+                </div>
+<div class="mb-12 relative" data-aos="fade-left" data-aos-delay="200">
+                    <div class="absolute -left-[45px] top-1 w-6 h-6 bg-themePrimary rounded-full border-4 border-themeNight shadow"></div>
+                    <!-- REPLACE TEXT HERE -->
+                    <h3 class="text-2xl font-bold header-text text-gray-800 glass-container bg-white/50 backdrop-blur inline-block px-6 py-4 rounded-2xl shadow-sm border border-white/20 transition-colors duration-1000">car race is must sis, don't forget this day after 13 years this day we will have a race🏎️🏎️ </h3>
+                </div>
+
+                </div>
+                      <div class="mb-12 relative" data-aos="fade-left" data-aos-delay="200">
+                    <div class="absolute -left-[45px] top-1 w-6 h-6 bg-themePrimary rounded-full border-4 border-themeNight shadow"></div>
+                    <!-- REPLACE TEXT HERE -->
+                    <h3 class="text-2xl font-bold header-text text-gray-800 glass-container bg-white/50 backdrop-blur inline-block px-6 py-4 rounded-2xl shadow-sm border border-white/20 transition-colors duration-1000">Egziabher yasebelen egna kasebnew ejigun yebeltal ena yesu fikad hono hulum yesakalen🙏🙏🙏❤️‍🩹</h3>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             11. FLOATING WISHES
+             ========================================== -->
+        <section class="py-24 px-4 relative overflow-hidden flex flex-col items-center justify-center min-h-[40vh]">
+            <h2 class="font-vibes text-5xl text-themeSecondary mb-12 text-center" data-aos="fade-up">Our Wishes For You...</h2>
+            <!-- These bubbles float up via AOS -->
+            <div class="flex flex-wrap justify-center gap-6 max-w-5xl">
+                <!-- REPLACE TEXT HERE -->
+                <div class="bg-white/20 backdrop-blur-sm p-6 rounded-full border border-white/30 text-white shadow-xl" data-aos="fade-up" data-aos-offset="0">May every dream come true ✨</div>
+                <div class="bg-white/20 backdrop-blur-sm p-6 rounded-full border border-white/30 text-white shadow-xl" data-aos="fade-up" data-aos-delay="100" data-aos-offset="0">May happiness always find you 🌸</div>
+                <div class="bg-white/20 backdrop-blur-sm p-6 rounded-full border border-white/30 text-white shadow-xl" data-aos="fade-up" data-aos-delay="200" data-aos-offset="0">May your smile never fade 😊</div>
+                <div class="bg-white/20 backdrop-blur-sm p-6 rounded-full border border-white/30 text-white shadow-xl" data-aos="fade-up" data-aos-delay="300" data-aos-offset="0">🌟 May God bless you with the Mercedes you've always dreamed of. 🚘✨</div></div>
+                <div class="bg-white/20 backdrop-blur-sm p-6 rounded-full border border-white/30 text-white shadow-xl" data-aos="fade-up" data-aos-delay="300" data-aos-offset="0">
+    🤲 May God guide your every step, protect you always, and fill your life with endless blessings. ❤️🙏
+</div>
+                <div class="bg-white/20 backdrop-blur-sm p-6 rounded-full border border-white/30 text-white shadow-xl" data-aos="fade-up" data-aos-delay="300" data-aos-offset="0">
+    🎂 May your 18th year be filled with laughter, unforgettable memories, and endless happiness. 🥳🎉
+</div>
+<div class="bg-white/20 backdrop-blur-sm p-6 rounded-full border border-white/30 text-white shadow-xl" data-aos="fade-up" data-aos-delay="300" data-aos-offset="0">
+    💕 May you always be surrounded by genuine love, loyal friends, and people who truly care about you. 🤗✨,,Obviously us😁
+</div>
+                <div class="bg-white/20 backdrop-blur-sm p-6 rounded-full border border-white/30 text-white shadow-xl" data-aos="fade-up" data-aos-delay="300" data-aos-offset="0">Endless Love ❤️</div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             9. DON'T CLICK (SECRET BUTTON)
+             Moved down near the end!
+             ========================================== -->
+        <section class="py-20 px-4 flex justify-center text-center relative z-20">
+            <button onclick="triggerSecret()" class="px-12 py-5 bg-themePrimary text-white rounded-full font-bold tracking-widest text-lg glow-btn transform hover:scale-110 transition shadow-2xl" data-aos="zoom-in">
+                DON'T CLICK 😂
+            </button>
+        </section>
+
+        <!-- ==========================================
+             12. FINAL WISH (Individual then BIG TEXT)
+             ========================================== -->
+        <section class="py-32 px-4 relative z-10 flex flex-col items-center justify-center text-center">
+            
+            <div class="paper-texture max-w-4xl p-10 md:p-16 rounded-sm text-center transform -rotate-1 relative mb-40 shadow-2xl" data-aos="zoom-in">
+                <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 w-32 h-8 bg-white/60 shadow border border-gray-200 rotate-2"></div>
+                <h2 class="font-vibes text-5xl md:text-6xl text-themePrimary mb-8">One Last Message From All Of Us ❤️</h2>
+                <p class="font-poppins text-lg md:text-2xl text-gray-800 font-light leading-relaxed italic">
+                    <!-- REPLACE TEXT HERE -->
+                   One Last Message From All of Us ❤️
+
+No matter where life takes us, we hope you never forget how much you mean to us.Thank you for every laugh, every memory, and every moment we've shared. keep smiling, chase your dreams fearlessly, and never stop being the amazing person you are.
+
+Happy 18th Birthday, our Princess. ❤️ We'll always be cheering for you.
+
+
+                </p>
+                <p class="font-bold text-gray-800 mt-6 text-xl">With love,
+Kal.T, Kal.G & The Black Kal  </br></br>🌍(the three kals)</p>
+            </div>
+
+            <!-- THE BIG TEXT SURPRISE (GSAP Reveal) -->
+            <div id="final-surprise" class="w-full h-[60vh] flex flex-col items-center justify-center relative">
+                <h1 class="surprise-text text-5xl md:text-7xl font-poppins font-bold text-white opacity-0 absolute drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">Thank You</h1>
+                <h1 class="surprise-text text-4xl md:text-6xl font-poppins font-light text-gray-300 opacity-0 absolute drop-shadow-md">For Being Part Of Our Lives</h1>
+                <h1 class="surprise-text text-6xl md:text-8xl font-poppins font-bold text-themePrimary opacity-0 absolute drop-shadow-[0_0_20px_rgba(255,92,138,0.8)]">Happy Birthday</h1>
+                <h1 class="surprise-text text-7xl md:text-[130px] font-vibes text-themePrimary opacity-0 absolute mt-20 drop-shadow-[0_0_30px_rgba(255,92,138,1)] bday-name">steela</br>
+                Redi</br>
+                Mrs.Mercedes ❤️</h1>
+            </div>
+
+        </section>
+  <footer class="glass-card max-w-5xl mx-auto my-10 rounded-2xl py-6 text-center">
+    <p class="text-gray-600">
+        Made with ❤️ by <strong>The Three Kals</strong><br>
+        &copy; july 2026 All Rights Reserved.
+    </p>
+</footer
+    </main>
+
+    <!-- SECRET POPUP MODAL -->
+    <div id="secret-modal" class="fixed inset-0 z-[100] bg-black/70 backdrop-blur-md hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="glass-card bg-white/95 p-12 rounded-3xl text-center max-w-sm transform scale-90 transition-transform duration-300 shadow-2xl" id="secret-box">
+            <div class="text-7xl mb-4">🙈</div>
+            <h3 class="text-3xl font-bold text-gray-800 mb-2">I knew you'd click it😂❤️</br>Anyways... curiosity wins. Here's your Mercedes key. 😁🔑🚘
+           ️</h3>
+            <button onclick="closeSecret()" class="px-8 py-3 bg-themePrimary text-white rounded-full font-bold hover:bg-pink-600 transition shadow-lg w-full mt-6">Close</button>
+        </div>
+      >
+</div>
+    <!-- =========================================================================
+         JAVASCRIPT
+         ========================================================================= -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/typed.js@2.0.16/dist/typed.umd.js"></script>
+
+    <script>
+        // Bulletproof Library Registration
+        try { if(typeof gsap !== 'undefined') gsap.registerPlugin(ScrollTrigger); } catch(e){}
+
+        const BDAY_NAME = "Sarah"; 
+        document.querySelectorAll('.bday-name').forEach(el => el.innerHTML = el.innerHTML.replace(/\[Birthday Girl's Name\]|\[Name\]/g, BDAY_NAME));
+
+        // 1. Loading & Landing (Bulletproof)
+        let loaderClosed = false;
+        function closeLoader() {
+            if(loaderClosed) return;
+            loaderClosed = true;
+            document.getElementById('loader-bar').style.width = '100%';
+            setTimeout(() => {
+                const loader = document.getElementById('loader');
+                if(loader) loader.classList.add('opacity-0');
+                setTimeout(() => {
+                    if(loader) loader.style.display = 'none';
+                    const landing = document.getElementById('landing');
+                    if(landing) {
+                        landing.classList.remove('hidden');
+                        setTimeout(() => landing.classList.remove('opacity-0'), 50);
+                    }
+                }, 1000);
+            }, 500);
+            initParticles();
+        }
+        
+        window.addEventListener('DOMContentLoaded', () => { setTimeout(closeLoader, 1500); });
+        window.addEventListener('load', closeLoader);
+        setTimeout(closeLoader, 3000); 
+
+        // 2. Buttons
+        const btnLater = document.getElementById('btn-later');
+        btnLater.addEventListener('mouseover', function() {
+            if(window.innerWidth > 768) this.style.transform = `translate(${(Math.random() - 0.5) * 300}px, ${(Math.random() - 0.5) * 300}px)`;
+        });
+        btnLater.addEventListener('click', function() {
+            if(window.innerWidth <= 768) { this.classList.remove('shake-mobile'); void this.offsetWidth; this.classList.add('shake-mobile'); }
+        });
+
+        document.getElementById('btn-open').addEventListener('click', () => {
+            try {
+                const bgm = document.getElementById('bg-music');
+                if(bgm) {
+                    bgm.volume = 0.3; 
+                    let playPromise = bgm.play();
+                    if(playPromise !== undefined) playPromise.catch(e => console.log("Audio blocked safely by browser."));
+                }
+            } catch(e) {}
+
+            try { fireworksFx(); } catch(e) {}
+            
+            const landing = document.getElementById('landing');
+            landing.classList.add('opacity-0');
+            
+            setTimeout(() => {
+                landing.style.display = 'none';
+                document.getElementById('main-content').classList.remove('hidden');
+                try { AOS.init({ duration: 1000, once: false }); } catch(e){}
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                setTimeout(() => { try { if(typeof confetti !== 'undefined') confetti({ particleCount: 150, spread: 100, origin: {y: 0.6} }); } catch(e){} }, 500);
+            }, 1000);
+        });
+
+        // 3. Carousel Logic
+        function moveCarousel(trackId, direction) {
+            try {
+                const track = document.getElementById(trackId);
+                if(!track) return;
+                const slides = track.children.length;
+                if(slides === 0) return;
+                let currentIndex = parseInt(track.getAttribute('data-index') || 0);
+                currentIndex = (currentIndex + direction + slides) % slides;
+                track.setAttribute('data-index', currentIndex);
+                track.style.transform = `translateX(-${currentIndex * 100}%)`;
+            } catch(e){}
+        }
+
+        // 4. Unified Music Player Logic
+        const playlistTracks = document.querySelectorAll('.playlist-track');
+        let currentSongIndex = 0;
+        let isPlaying = false;
+        const playerTitle = document.getElementById('player-title');
+        const playerCover = document.getElementById('player-cover');
+        const playBtnIcon = document.querySelector('#btn-play-pause i');
+        const bgMusic = document.getElementById('bg-music');
+
+        function loadSong(index) {
+            if(playlistTracks.length > 0) {
+                playlistTracks.forEach(t => { t.pause(); t.currentTime = 0; });
+                const track = playlistTracks[index];
+                playerTitle.innerText = track.getAttribute('data-title');
+                playerCover.src = track.getAttribute('data-cover');
+                if(isPlaying) { track.play(); }
+            }
+        }
+
+        function togglePlay() {
+    if (playlistTracks.length === 0) return;
+
+    const track = playlistTracks[currentSongIndex];
+
+    if (isPlaying) {
+        // Pause playlist
+        track.pause();
+
+        playBtnIcon.className = 'fa-solid fa-play ml-1';
+        playerCover.style.animationPlayState = 'paused';
+
+        // Resume background music
+        if (bgMusic) {
+            bgMusic.play().catch(() => {});
+            bgMusic.volume = 0.3;
+        }
+
+    } else {
+        // Pause background music (keeps current position)
+        if (bgMusic) {
+            bgMusic.pause();
+        }
+
+        // Play playlist
+        track.play();
+
+        playBtnIcon.className = 'fa-solid fa-pause';
+        playerCover.style.animationPlayState = 'running';
+
+        track.onended = nextSong;
+    }
+
+    isPlaying = !isPlaying;
+}
+function loadSong(index) {
+    if (playlistTracks.length > 0) {
+
+        playlistTracks.forEach(t => {
+            t.pause();
+            t.currentTime = 0;
+        });
+
+        const track = playlistTracks[index];
+
+        playerTitle.innerText = track.getAttribute('data-title');
+        playerCover.src = track.getAttribute('data-cover');
+
+        if (isPlaying) {
+            track.play();
+            track.onended = nextSong;
+        }
+    }
+}
+function nextSong() {
+    if (playlistTracks.length === 0) return;
+
+    currentSongIndex = (currentSongIndex + 1) % playlistTracks.length;
+
+    loadSong(currentSongIndex);
+}
+function prevSong() {
+    if (playlistTracks.length === 0) return;
+
+    currentSongIndex--;
+
+    if (currentSongIndex < 0) {
+        currentSongIndex = playlistTracks.length - 1;
+    }
+
+    loadSong(currentSongIndex);
+
+    if (isPlaying) {
+        playlistTracks[currentSongIndex].play();
+    }
+}
+
+        // 5. GSAP Countdown
+        const cdObs = new IntersectionObserver((entries) => {
+            if(entries[0].isIntersecting) {
+                try {
+                    const disp = document.getElementById('cd-display'), tl = gsap.timeline();
+                    ['3', '2', '1'].forEach(n => {
+                        tl.to(disp, { duration: 0, innerHTML: n, scale: 0.5, opacity: 0 })
+                          .to(disp, { duration: 0.5, scale: 1, opacity: 1, ease: "back.out(1.7)" })
+                          .to(disp, { duration: 0.5, scale: 1.5, opacity: 0, delay: 0.2 });
+                    });
+                    tl.call(() => { disp.style.display = 'none'; document.getElementById('cd-text').classList.remove('opacity-0'); });
+                } catch(e){}
+                cdObs.disconnect();
+            }
+        });
+        setTimeout(() => { const cd = document.getElementById('countdown'); if(cd) cdObs.observe(cd); }, 3000);
+
+        // 6. Night Mode Transition
+        let typedInit = false;
+        const nightObs = new IntersectionObserver((entries) => {
+            if(entries[0].isIntersecting) {
+                document.body.classList.add('night-mode');
+                document.getElementById('night-stars').classList.remove('hidden');
+                
+                document.querySelectorAll('.header-text').forEach(el => el.classList.add('night-text'));
+                document.querySelectorAll('.sub-text').forEach(el => el.classList.add('night-text'));
+                document.querySelectorAll('.glass-container').forEach(el => { el.classList.add('glass-dark'); el.classList.remove('glass-card'); });
+
+                if(!typedInit) {
+                    try {
+                        new Typed('#typed-messages', { strings: ["These messages became memories...", "Words we cherish forever. ❤️"], typeSpeed: 50, backSpeed: 30, backDelay: 2000, loop: true, showCursor: false });
+                        typedInit = true;
+                    } catch(e){}
+                }
+            }
+        }, { threshold: 0.1 });
+        setTimeout(() => { const trigger = document.getElementById('night-trigger'); if(trigger) nightObs.observe(trigger); }, 3000);
+
+        // 7. Final GSAP Surprise Sequence
+        const texts = document.querySelectorAll('.surprise-text');
+        try {
+            const stl = gsap.timeline({ scrollTrigger: { trigger: "#final-surprise", start: "top center", end: "bottom center", toggleActions: "play none none reverse", onEnter: fireworksFx } });
+            texts.forEach((txt, i) => {
+                stl.to(txt, { opacity: 1, y: -20, duration: 1.5, ease: "power2.out" })
+                   .to(txt, { opacity: 0, y: -40, duration: 1, delay: 1, ease: "power2.in" });
+            });
+            stl.to(texts[texts.length-1], { opacity: 1, y: -20, duration: 2, ease: "power2.out" }).call(fireworksFx);
+        } catch(e){}
+
+        // 8. Secret Button
+        function triggerSecret() {
+            document.getElementById('secret-modal').classList.remove('hidden');
+            setTimeout(() => { document.getElementById('secret-modal').classList.remove('opacity-0'); document.getElementById('secret-box').classList.remove('scale-90'); try{confettiFx();}catch(e){} }, 10);
+        }
+        function closeSecret() {
+            document.getElementById('secret-modal').classList.add('opacity-0'); document.getElementById('secret-box').classList.add('scale-90');
+            setTimeout(() => document.getElementById('secret-modal').classList.add('hidden'), 300);
+        }
+
+        // Helpers
+        function fireworksFx() {
+            try {
+                if(typeof confetti === 'undefined') return;
+                const end = Date.now() + 3000;
+                (function frame() {
+                    confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#FF5C8A', '#D4AF37'] });
+                    confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#FFD6E7', '#ffffff'] });
+                    if (Date.now() < end) requestAnimationFrame(frame);
+                }());
+            } catch(e){}
+        }
+        function confettiFx() { try { confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } }); } catch(e){} }
+        
+        function initParticles() {
+            const c = document.getElementById('global-particles'), i = ['fa-heart', 'fa-star'], clr = ['text-themePrimary', 'text-themeSecondary', 'text-white'];
+            setInterval(() => {
+                if(document.body.classList.contains('night-mode')) return;
+                const p = document.createElement('i');
+                p.className = `fa-solid ${i[Math.floor(Math.random()*i.length)]} ${clr[Math.floor(Math.random()*clr.length)]} float-anim opacity-40`;
+                p.style.left = Math.random()*100 + 'vw'; p.style.fontSize = (Math.random()*15 + 10) + 'px'; p.style.animationDuration = (Math.random()*10 + 10) + 's';
+                if(c) c.appendChild(p); setTimeout(() => p.remove(), 22000);
+            }, 1000);
+            
+            const nStars = document.getElementById('night-stars');
+            for(let j=0; j<60; j++) {
+                let d = document.createElement('div'); d.className = 'star';
+                d.style.width = Math.random()*3 + 'px'; d.style.height = d.style.width;
+                d.style.left = Math.random()*100 + '%'; d.style.top = Math.random()*100 + '%';
+                d.style.animationDuration = (Math.random()*3+2)+'s';
+                if(nStars) nStars.appendChild(d);
+            }
+        }
+    </script>
+</body>
+</html>
